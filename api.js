@@ -54,6 +54,10 @@ app.post("/login", async (req, res) => {
   } else res.status(404).json({ msg: "No user exists with that name!" });
 });
 
+app.get("/itemNames", async (req, res) => {
+  res.json((await Item.findAll({ attributes: ["name"] })).map((x) => x.name));
+});
+
 app.get("/item", LoggedInOnly, async (req, res) => {
   res.json(await Item.findAll());
 });
