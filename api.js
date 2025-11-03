@@ -30,7 +30,7 @@ app.post("/register", async (req, res) => {
   if (!(name && password && address))
     return res.status(400).json({ msg: "You must fill out all fields!" });
   if (await User.findOne({ where: { name } }))
-    return res.status(400).json("That name is already taken!");
+    return res.status(400).json({ msg: "That name is already taken!" });
   await User.create({ name, password: HashPassword(password), address });
   res.json({ msg: "Success! You can now log in." });
 });
@@ -40,7 +40,7 @@ app.post("/login", async (req, res) => {
   if (!(name && password))
     return res
       .status(400)
-      .json("You must fill out the name and password fields!");
+      .json({ msg: "You must fill out the name and password fields!" });
   const user = await User.findOne({ where: { name } });
   if (user) {
     if (ComparePassword(password, user.password)) {
@@ -65,7 +65,7 @@ app.get("/item", LoggedInOnly, async (req, res) => {
 app.post("/item", LoggedInOnly, async (req, res) => {
   const { name, count } = req.body;
   if (!(name && count))
-    return res.status(400).json("You must fill out all fields!");
+    return res.status(400).json({ msg: "You must fill out all fields!" });
   await Item.create({
     name,
     count,
@@ -85,7 +85,8 @@ app.put("/item", LoggedInOnly, async (req, res) => {
   const { id, name, count } = req.body;
   const item = await Item.findByPk(id);
   if (!item) return res.status(404).json({ msg: "No such item!" });
-  if (!(name || count)) return res.status(400).json("Not changing anything.");
+  if (!(name || count))
+    return res.status(400).json({ msg: "Not changing anything." });
   if (name) await item.update({ name });
   if (count) await item.update({ count });
   res.json({ msg: "Success!" });
